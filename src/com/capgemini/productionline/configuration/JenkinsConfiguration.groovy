@@ -575,7 +575,7 @@ class JenkinsConfiguration implements Serializable {
 
         // Check if our installation is already present in the configuration
         sonar_installations.each {
-            installation = (SonarInstallation) it
+            def installation = (SonarInstallation) it
             if (sonar_inst.getName() == installation.getName()) {
             	if (replaceInstallation) {
             		sonar_installations -= installation

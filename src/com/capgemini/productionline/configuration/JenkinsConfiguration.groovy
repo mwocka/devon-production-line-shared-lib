@@ -48,6 +48,7 @@ import hudson.slaves.EnvironmentVariablesNodeProperty.Entry
 import hudson.plugins.sshslaves.verifiers.*
 import groovy.json.JsonSlurper
 import hudson.plugins.git.*
+import org.jenkinsci.plugins.configfiles.GlobalConfigFiles
 
 /**
  * Contains the configuration methods of the jenkins component
@@ -839,7 +840,6 @@ class JenkinsConfiguration implements Serializable {
             try {
 				def globalConfigFiles = GlobalConfigFiles.get()
 				def globalConfig = new GlobalMavenSettingsConfig(newConfigID, newConfigName, newConfigComment, XmlUtil.serialize(response), true, serverCreds)
-                context.println "Maven Config has been saved "
 				globalConfigFiles.save(globalConfig)
 				return true
 			} catch (Exception ex) {

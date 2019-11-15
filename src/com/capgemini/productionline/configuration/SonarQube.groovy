@@ -1,5 +1,5 @@
 #!/usr/bin/groovy
-package com.capgemini.productionline.configuration;
+package com.capgemini.productionline.configuration
 
 class SonarQube implements Serializable {
     String username

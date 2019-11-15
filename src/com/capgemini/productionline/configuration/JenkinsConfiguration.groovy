@@ -6,10 +6,10 @@ import com.cloudbees.plugins.credentials.CredentialsScope
 import com.cloudbees.plugins.credentials.SystemCredentialsProvider
 import com.cloudbees.plugins.credentials.domains.Domain
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl
-import com.openshift.jenkins.plugins.ClusterConfig
-import com.openshift.jenkins.plugins.OpenShiftClientTools
-import com.openshift.jenkins.plugins.OpenShift
-import com.openshift.jenkins.plugins.OpenShiftTokenCredentials
+//import com.openshift.jenkins.plugins.ClusterConfig
+//import com.openshift.jenkins.plugins.OpenShiftClientTools
+//import com.openshift.jenkins.plugins.OpenShift
+//import com.openshift.jenkins.plugins.OpenShiftTokenCredentials
 import com.synopsys.arc.jenkinsci.plugins.customtools.versions.ToolVersionConfig
 import hudson.EnvVars
 import hudson.plugins.sonar.SonarGlobalConfiguration
@@ -30,7 +30,7 @@ import org.jenkinsci.plugins.docker.commons.tools.DockerToolInstaller
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval
 import ru.yandex.qatools.allure.jenkins.tools.AllureCommandlineInstallation
 import ru.yandex.qatools.allure.jenkins.tools.AllureCommandlineInstaller
-import com.dabsquared.gitlabjenkins.connection.GitLabApiTokenImpl
+//import com.dabsquared.gitlabjenkins.connection.GitLabApiTokenImpl
 import com.dabsquared.gitlabjenkins.connection.GitLabApiToken
 import org.jenkinsci.plugins.plaincredentials.*
 import org.jenkinsci.plugins.plaincredentials.impl.*

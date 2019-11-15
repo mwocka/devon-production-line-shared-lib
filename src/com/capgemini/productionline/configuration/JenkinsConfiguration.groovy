@@ -813,10 +813,6 @@ class JenkinsConfiguration implements Serializable {
 	 *    ID of maven configuration - it will be used only to catch the template
 	 * @param serverID
 	 *    Server ID used inside pom.xml inside distributionManagement
-	 * @param nexusUsername
-	 *    Nexus user username - the user need to be added to Nexus or LDAP
-	 * @param nexusPassword
-	 *    Nexus user password - the user need to be added to Nexus or LDAP
 	 * @param newConfigID
 	 *    New maven configuration ID 
 	 * @param newConfigName
@@ -827,7 +823,7 @@ class JenkinsConfiguration implements Serializable {
 	 *    ServerCredentialMapping credentials
 	 */
 	@NonCPS
-	public boolean createMavenConfigContetnt(String defaultConfigID, String serverID, String nexusUsername, String nexusPassword, String newConfigID, String newConfigName, String newConfigComment, ServerCredentialMapping serverCreds) {
+	public boolean createMavenConfigContetnt(String defaultConfigID, String serverID, String newConfigID, String newConfigName, String newConfigComment, ServerCredentialMapping serverCreds) {
 	        def configStore = Jenkins.get().getExtensionList('org.jenkinsci.plugins.configfiles.GlobalConfigFiles')[0]
 	        try {
 		        def cfg = configStore.getById(defaultConfigID)
@@ -837,11 +833,20 @@ class JenkinsConfiguration implements Serializable {
 				    delegate.servers() {
 				        delegate.server() {
 				        	delegate.id(serverID)
-				        	delegate.username(nexusUsername)
-				        	delegate.password(nexusPassword)
 				        }
 				    }
 				}
+
+                response.profiles.replaceNode { 
+                    delegate.profiles() {
+                        delegate.distributionManagement() {
+                            delegate.distributionManagement() {
+                                delegate.id(serverID)
+                                url.id("http://nexus3-core:8081/nexus3/repository/maven-snapshots")
+                            }
+                        }
+                    }
+                }
 
 				def globalConfigFiles = GlobalConfigFiles.get()
 				def globalConfig = new GlobalMavenSettingsConfig(newConfigID, newConfigName, newConfigComment, XmlUtil.serialize(response), true, serverCreds)

@@ -830,9 +830,9 @@ class JenkinsConfiguration implements Serializable {
 		        def response = new XmlParser().parseText(cfg.content)
 		        
 		        response.servers.replaceNode { 
-				    delegate.servers() {
-				        delegate.server() {
-				        	delegate.id(serverID)
+				    servers() {
+				        server() {
+				        	id(serverID)
 				        }
 				    }
 				}

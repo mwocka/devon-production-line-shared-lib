@@ -271,47 +271,7 @@ class JenkinsConfiguration implements Serializable {
 
         return true
     }
-
-    public Boolean installOpenshift(String toolName, String commandLabel, String batchString, String homeDir) {
-
-        def inst = Jenkins.get()
-
-        def desc = inst.getDescriptor("com.openshift.jenkins.plugins.OpenShiftClientTools")
-
-        def installations = []
-        def install = true
-
-        // Iteration over already exiting installation, they will be added to the installation list
-        for (i in desc.getInstallations()) {
-            installations.push(i)
-
-            if (i.name == toolName) {
-                install = false
-            }
-        }
-
-        if (install) {
-            try {
-
-                def installer = new CommandInstaller(commandLabel, batchString, homeDir)
-
-                def installerProps = new InstallSourceProperty([installer])
-                def installation = new OpenShiftClientTools(toolName, "", [installerProps])
-                installations.push(installation)
-
-                desc.setInstallations(installations.toArray(new OpenShiftClientTools[0]))
-
-                desc.save()
-            } catch (Exception ex) {
-                context.println ex
-                context.println("Installation error  ")
-                return false
-            }
-        }
-
-        return true
-    }
-
+	
     /**
      * Method for installing a jenkins plugin
      * <p>

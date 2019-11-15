@@ -126,6 +126,7 @@ class JenkinsConfiguration implements Serializable {
 	 *    ID of credential stored in Jenkins
 	 */
 	public deleteCredentialObject(String credential_id) {
+		def allCreds
 		def store = jenkins.model.Jenkins.instance.getExtensionList('com.cloudbees.plugins.credentials.SystemCredentialsProvider')[0].getStore()
 		allCreds = store.getCredentials(Domain.global())
 		allCreds.each{

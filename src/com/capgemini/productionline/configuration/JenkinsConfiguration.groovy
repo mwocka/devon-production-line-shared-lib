@@ -31,7 +31,7 @@ import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval
 import ru.yandex.qatools.allure.jenkins.tools.AllureCommandlineInstallation
 import ru.yandex.qatools.allure.jenkins.tools.AllureCommandlineInstaller
 //import com.dabsquared.gitlabjenkins.connection.GitLabApiTokenImpl
-import com.dabsquared.gitlabjenkins.connection.GitLabApiToken
+//import com.dabsquared.gitlabjenkins.connection.GitLabApiToken
 import org.jenkinsci.plugins.plaincredentials.*
 import org.jenkinsci.plugins.plaincredentials.impl.*
 import com.cloudbees.plugins.credentials.common.*
@@ -996,38 +996,6 @@ class JenkinsConfiguration implements Serializable {
         instance.save()
     }
 
-    /**
-     * Method for creating a global credential object in the jenkins context.
-     * <p>
-     * @param id
-     *    uniqe id for references in Jenkins
-     * @param desc
-     *    description for the credentials object.
-     * @param username
-     *    username of the credentials object.
-     * @param password
-     *    password of the credentials object.
-     */
-    public OpenShiftTokenCredentials createCredatialObjectUsernamePassword(String id, String desc, String token) {
-
-        OpenShiftTokenCredentials found = SystemCredentialsProvider.getInstance().getCredentials().find {
-            if (it instanceof OpenShiftTokenCredentials) {
-                it.getId() == id
-            }
-        } as OpenShiftTokenCredentials
-
-        if(!found) {
-            // create credential object
-            def credObj = new OpenShiftTokenCredentials(CredentialsScope.GLOBAL, id, desc, Secret.fromString(token))
-            context.println "Add credentials " + id + " in global store"
-            // store global credential object
-            SystemCredentialsProvider.getInstance().getStore().addCredentials(Domain.global(), credObj)
-            return credObj
-        }
-
-        return found
-    }
-
 	/**
 	 * Create new Jenkins Pipeline with SCM functionality 
 	 * <p>
@@ -1054,42 +1022,4 @@ class JenkinsConfiguration implements Serializable {
 			return false
 		}	
 	}
-
-    public void addOpenshiftGlobalConfiguration(String clusterName, String clusterUrl, String clusterCredential, String clusterProject) {
-        OpenShift.DescriptorImpl openshiftDSL = (OpenShift.DescriptorImpl)Jenkins.get().getDescriptor("com.openshift.jenkins.plugins.OpenShift")
-
-        def found = openshiftDSL.getClusterConfigs().find {
-            it.getName() == clusterName
-        }
-
-        if (!found) {
-            ClusterConfig cluster1 = new ClusterConfig(clusterName)
-            cluster1.setServerUrl(clusterUrl)
-            cluster1.setCredentialsId(clusterCredential)
-            cluster1.setDefaultProject(clusterProject)
-            cluster1.setSkipTlsVerify(true)
-
-            openshiftDSL.addClusterConfig(cluster1)
-            openshiftDSL.save()
-        } else {
-            context.println "Openshift configuration with name ${clusterName} already existes"
-        }
-    }
-
-    public String gitlabApiToken(String id) {
-
-        GitLabApiToken found = SystemCredentialsProvider.getInstance().getCredentials().find {
-            if (it instanceof GitLabApiToken || it instanceof GitLabApiTokenImpl) {
-                it.getId() == id
-            }
-        } as GitLabApiToken
-
-        if (found) {
-            return found.getApiToken().getPlainText()
-        } else {
-            context.println "gitLabApitToken with ID ${id} not found"
-        }
-
-        return ''
-    }
 }

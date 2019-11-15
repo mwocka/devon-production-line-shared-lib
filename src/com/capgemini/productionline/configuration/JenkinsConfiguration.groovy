@@ -822,7 +822,6 @@ class JenkinsConfiguration implements Serializable {
 	 * @param serverCreds
 	 *    ServerCredentialMapping credentials
 	 */
-	@NonCPS
 	public boolean createMavenConfigContetnt(String defaultConfigID, String serverID, String newConfigID, String newConfigName, String newConfigComment, ServerCredentialMapping serverCreds) {
 	        def configStore = Jenkins.get().getExtensionList('org.jenkinsci.plugins.configfiles.GlobalConfigFiles')[0]
 	        try {
@@ -838,11 +837,11 @@ class JenkinsConfiguration implements Serializable {
 				}
 
                 response.profiles.replaceNode { 
-                    delegate.profiles() {
-                        delegate.distributionManagement() {
-                            delegate.distributionManagement() {
-                                delegate.id(serverID)
-                                url.id("http://nexus3-core:8081/nexus3/repository/maven-snapshots")
+                    profiles() {
+                        distributionManagement() {
+                            distributionManagement() {
+                                id(serverID)
+                                url("http://nexus3-core:8081/nexus3/repository/maven-snapshots")
                             }
                         }
                     }

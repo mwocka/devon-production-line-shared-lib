@@ -49,6 +49,9 @@ import hudson.plugins.sshslaves.verifiers.*
 import groovy.json.JsonSlurper
 import hudson.plugins.git.*
 import org.jenkinsci.plugins.configfiles.GlobalConfigFiles
+import groovy.xml.StreamingMarkupBuilder 
+import groovy.xml.MarkupBuilder
+import groovy.xml.XmlUtil
 
 /**
  * Contains the configuration methods of the jenkins component

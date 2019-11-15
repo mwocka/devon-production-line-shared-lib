@@ -842,7 +842,7 @@ class JenkinsConfiguration implements Serializable {
 				globalConfigFiles.save(globalConfig)
 				return true
 			} catch (Exception ex) {
-				println("Maven Config has been not saved " + ex)
+				context.println "Maven Config has been not saved " + ex
 				return false
 			}
 	    }

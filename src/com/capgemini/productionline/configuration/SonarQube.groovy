@@ -1,6 +1,8 @@
 #!/usr/bin/groovy
 package com.capgemini.productionline.configuration
 
+import groovy.json.JsonSlurper
+
 class SonarQube implements Serializable {
     String username
     String sonarQubeBaseUrl

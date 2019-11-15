@@ -48,6 +48,7 @@ import hudson.slaves.EnvironmentVariablesNodeProperty.Entry
 import hudson.plugins.sshslaves.verifiers.*
 import groovy.json.JsonSlurper
 import hudson.plugins.git.*
+import com.cloudbees.groovy.cps.NonCPS
 
 /**
  * Contains the configuration methods of the jenkins component

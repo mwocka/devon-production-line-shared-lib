@@ -650,7 +650,7 @@ class JenkinsConfiguration implements Serializable {
         def cfg = configStore.getById("MavenSettings")
 
         if (checkCredentialInStore(credentialID)) {
-            serverCredentialMapping = new ServerCredentialMapping(serverID, credentialID)
+            def serverCredentialMapping = new ServerCredentialMapping(serverID, credentialID)
             cfg.serverCredentialMappings.add(serverCredentialMapping)
             return configStore.save(cfg)
         } else {

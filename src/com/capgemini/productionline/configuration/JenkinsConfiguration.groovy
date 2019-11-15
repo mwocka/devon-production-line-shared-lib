@@ -48,7 +48,6 @@ import hudson.slaves.EnvironmentVariablesNodeProperty.Entry
 import hudson.plugins.sshslaves.verifiers.*
 import groovy.json.JsonSlurper
 import hudson.plugins.git.*
-import com.cloudbees.groovy.cps.NonCPS
 
 /**
  * Contains the configuration methods of the jenkins component
@@ -824,7 +823,7 @@ class JenkinsConfiguration implements Serializable {
 	 *    ServerCredentialMapping credentials
 	 */
 	@NonCPS
-	public boolean createMavenConfigContetnt(String defaultConfigID, String serverID, String newConfigID, String newConfigName, String newConfigComment, ServerCredentialMapping serverCreds) {
+	public createMavenConfigContetnt(String defaultConfigID, String serverID, String newConfigID, String newConfigName, String newConfigComment, ServerCredentialMapping serverCreds) {
 	        def configStore = Jenkins.get().getExtensionList('org.jenkinsci.plugins.configfiles.GlobalConfigFiles')[0]
 	        try {
 		        def cfg = configStore.getById(defaultConfigID)

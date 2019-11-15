@@ -46,7 +46,8 @@ import hudson.slaves.*
 import hudson.plugins.sshslaves.SSHLauncher
 import hudson.slaves.EnvironmentVariablesNodeProperty.Entry
 import hudson.plugins.sshslaves.verifiers.*
-
+import groovy.json.JsonSlurper
+import hudson.plugins.git.*
 
 /**
  * Contains the configuration methods of the jenkins component
@@ -84,10 +85,56 @@ class JenkinsConfiguration implements Serializable {
         return credObj
     }
 
-    public deleteCredentialObject(String id) {
-        context.println "Deleting credential " + id + " in global store"
-        // TODO: add implementation   def deleteCredentials = CredentialsMatchers.withId(credentialsId)
-    }
+	/**
+	 * Method for adding Secret in Jenkins
+	 * <p>
+	 * @param secret_id
+	 *    ID of secret stored in Jenkins
+	 * @param description
+	 *    Description from secret
+	 * @param token
+	 *    Token provided as string
+	 */
+	public addJenkinsSecretCredential(String secret_id, String description, String token) {
+		domain = Domain.global()
+		store = Jenkins.instance.getExtensionList('com.cloudbees.plugins.credentials.SystemCredentialsProvider')[0].getStore()	
+		def secret_Token = Secret.fromString(token)
+		secretText = new StringCredentialsImpl(
+			CredentialsScope.GLOBAL,
+			secret_id,
+			description,
+			secret_Token
+		)
+		try {
+			if (store.addCredentials(domain, secretText)) {
+				context.println "Secret has been saved in Jenkins"
+				return secret_Token
+			} else {
+				context.println "Secret has not been saved in Jenkins"
+				return null
+			}
+		} catch (Exception ex) {
+			context.println "Secret has not been saved in Jenkins " + ex
+			return null
+		}
+	}
+
+	/**
+	 * Method for removing Jenkins Credentials Object
+	 * <p>
+	 * @param credential_id
+	 *    ID of credential stored in Jenkins
+	 */
+	public deleteCredentialObject(String credential_id) {
+		def store = jenkins.model.Jenkins.instance.getExtensionList('com.cloudbees.plugins.credentials.SystemCredentialsProvider')[0].getStore()
+		allCreds = store.getCredentials(Domain.global())
+		allCreds.each{
+		    	if (it.id == credential_id) {
+		    		store.removeCredentials(Domain.global(), it)
+		    		context.println "Deleting credential " + credential_id + " from global store"
+		    	}
+		    }
+	}
 
     /**
      * Method for adding a custom tool the Jenkins installation.
@@ -518,7 +565,6 @@ class JenkinsConfiguration implements Serializable {
         } else {
             context.println("Maven install found. Done.")
         }
-
     }
 
     /**
@@ -528,18 +574,23 @@ class JenkinsConfiguration implements Serializable {
      *    String used to identify the new server that should be added.
      * @param @required sonar_server_url
      *    URL of the Sonarqube server.
-     * @param @required sonar_auth_token
-     *    Token used to communicate with the sonarqube server.
+     * @param @required credentialsId
+     *    Secret Credential ID from Jenkins global credentials.
+     * @param @required serverAuthenticationToken
+     *    Secret added inside Jenkins global credentials.
+     * @param @optional webhookSecretId
      * @param @optional sonar_mojo_version
      *    sonar_mojo_version
      * @param @optional sonar_additional_properties
      * @param @optional sonar_triggers
      * @param @optional sonar_additional_analysis_properties
+     * @param @optional replaceInstallation
+     *    If this will be set as true then existing installaion will be overided
      *
      * @return
      *    Boolean value which reflects wether the installation was successfull or not
      */
-    public boolean addSonarqubeServer(String sonar_name, String sonar_server_url, String sonar_auth_token, String sonar_mojo_version = "", String sonar_additional_properties = "", TriggersConfig sonar_triggers = new TriggersConfig(), String sonar_additional_analysis_properties = "") {
+    public boolean addSonarqubeServer(String sonar_name, String sonar_server_url, String credentialsId, Secret serverAuthenticationToken, String webhookSecretId, String sonar_mojo_version = "", String sonar_additional_properties = "", TriggersConfig sonar_triggers = new TriggersConfig(), String sonar_additional_analysis_properties = "", boolean replaceInstallation = false) {
         def instance = Jenkins.get()
 
         def sonar_conf = instance.getDescriptor(SonarGlobalConfiguration.class)
@@ -547,11 +598,13 @@ class JenkinsConfiguration implements Serializable {
         def sonar_inst = new SonarInstallation(
                 sonar_name,
                 sonar_server_url,
-                sonar_auth_token,
+                credentialsId,
+                serverAuthenticationToken,
+                webhookSecretId,
                 sonar_mojo_version,
                 sonar_additional_properties,
-                sonar_triggers,
-                sonar_additional_analysis_properties
+                sonar_additional_analysis_properties,
+                sonar_triggers
         )
 
         // Get the list of all sonarQube global configurations.
@@ -563,9 +616,13 @@ class JenkinsConfiguration implements Serializable {
         sonar_installations.each {
             installation = (SonarInstallation) it
             if (sonar_inst.getName() == installation.getName()) {
-                sonar_inst_exists = true
-                context.println("Found existing installation: " + installation.getName())
-                return false
+            	if (replaceInstallation) {
+            		sonar_installations -= installation
+        		} else {
+        			sonar_inst_exists = true
+	                context.println "Found existing installation: " + installation.getName()
+	                return false
+        		}
             }
         }
 
@@ -576,7 +633,7 @@ class JenkinsConfiguration implements Serializable {
             try {
                 sonar_conf.save()
             } catch (Exception ex) {
-                context.println("Installation error  " + ex.getMessage())
+                context.println "Installation error " + ex.getMessage()
                 return false
             }
 
@@ -788,6 +845,53 @@ class JenkinsConfiguration implements Serializable {
         return true
     }
 
+	/**
+	 * Create new Maven Configuration in Config File Management 
+	 * <p>
+	 * @param defaultConfigID
+	 *    ID of maven configuration - it will be used only to catch the template
+	 * @param serverID
+	 *    Server ID used inside pom.xml inside distributionManagement
+	 * @param nexusUsername
+	 *    Nexus user username - the user need to be added to Nexus or LDAP
+	 * @param nexusPassword
+	 *    Nexus user password - the user need to be added to Nexus or LDAP
+	 * @param newConfigID
+	 *    New maven configuration ID 
+	 * @param newConfigName
+	 *    New maven configuration name 
+	 * @param newConfigComment
+	 *    New maven configuration comment 
+	 * @param serverCreds
+	 *    ServerCredentialMapping credentials
+	 */
+	@NonCPS
+	public boolean createMavenConfigContetnt(String defaultConfigID, String serverID, String nexusUsername, String nexusPassword, String newConfigID, String newConfigName, String newConfigComment, ServerCredentialMapping serverCreds) {
+	        def configStore = Jenkins.get().getExtensionList('org.jenkinsci.plugins.configfiles.GlobalConfigFiles')[0]
+	        try {
+		        def cfg = configStore.getById(defaultConfigID)
+		        def response = new XmlParser().parseText(cfg.content)
+		        
+		        response.servers.replaceNode { 
+				    delegate.servers() {
+				        delegate.server() {
+				        	delegate.id(serverID)
+				        	delegate.username(nexusUsername)
+				        	delegate.password(nexusPassword)
+				        }
+				    }
+				}
+
+				def globalConfigFiles = GlobalConfigFiles.get()
+				def globalConfig = new GlobalMavenSettingsConfig(newConfigID, newConfigName, newConfigComment, XmlUtil.serialize(response), true, serverCreds)
+				globalConfigFiles.save(globalConfig)
+				return true
+			} catch (Exception ex) {
+				println("Maven Config has been not saved " + ex)
+				return false
+			}
+	    }
+
     /**
      * <p>
      *    The method checks if a Credential Object with the given ID exists in the Jenkins System Credential Store
@@ -923,6 +1027,33 @@ class JenkinsConfiguration implements Serializable {
 
         return found
     }
+
+	/**
+	 * Create new Jenkins Pipeline with SCM functionality 
+	 * <p>
+	 * @param scmURL
+	 *    SCM URL which contains Jenkinsfile
+	 * @param scmBranch
+	 *    SCM branch
+	 * @param jenkinsJobName
+	 *    Name of Jenkins Pipeline Job
+	 */
+	boolean createJenkinsScmPipeline(String scmURL, String scmBranch, String jenkinsJobName) {
+		try {
+			def scm = new GitSCM(scmURL)
+			scm.branches = [new BranchSpec(scmBranch)];
+			def flowDefinition = new org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition(scm, "Jenkinsfile")
+			def parent = Jenkins.instance
+			def job = new org.jenkinsci.plugins.workflow.job.WorkflowJob(parent, jenkinsJobName)
+			job.definition = flowDefinition
+			parent.reload()
+			context.println "Jenkins job has been created"
+			return true
+		} catch (Exception ex) {
+			context.println "Jenkins job creation failed " + ex
+			return false
+		}	
+	}
 
     public void addOpenshiftGlobalConfiguration(String clusterName, String clusterUrl, String clusterCredential, String clusterProject) {
         OpenShift.DescriptorImpl openshiftDSL = (OpenShift.DescriptorImpl)Jenkins.get().getDescriptor("com.openshift.jenkins.plugins.OpenShift")

@@ -837,6 +837,8 @@ class JenkinsConfiguration implements Serializable {
 			    delegate.servers() {
 			        delegate.server() {
 			        	delegate.id(serverID)
+					delegate.username()
+					delegate.password()
 			        }
 			    }
 			}

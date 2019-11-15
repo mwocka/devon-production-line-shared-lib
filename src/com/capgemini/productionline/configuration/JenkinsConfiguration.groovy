@@ -837,17 +837,6 @@ class JenkinsConfiguration implements Serializable {
 				    }
 				}
 
-                response.profiles.replaceNode { 
-                    profiles() {
-                        distributionManagement() {
-                            distributionManagement() {
-                                id(serverID)
-                                url("http://nexus3-core:8081/nexus3/repository/maven-snapshots")
-                            }
-                        }
-                    }
-                }
-
 				def globalConfigFiles = GlobalConfigFiles.get()
 				def globalConfig = new GlobalMavenSettingsConfig(newConfigID, newConfigName, newConfigComment, XmlUtil.serialize(response), true, serverCreds)
 				globalConfigFiles.save(globalConfig)

@@ -822,6 +822,7 @@ class JenkinsConfiguration implements Serializable {
 	 * @param serverCreds
 	 *    ServerCredentialMapping credentials
 	 */
+	@NonCPS
 	public boolean createMavenConfigContetnt(String defaultConfigID, String serverID, String newConfigID, String newConfigName, String newConfigComment, ServerCredentialMapping serverCreds) {
 	        def configStore = Jenkins.get().getExtensionList('org.jenkinsci.plugins.configfiles.GlobalConfigFiles')[0]
 	        try {

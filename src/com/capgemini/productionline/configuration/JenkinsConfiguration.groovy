@@ -97,7 +97,7 @@ class JenkinsConfiguration implements Serializable {
 	 */
 	public addJenkinsSecretCredential(String secret_id, String description, String token) {
 		def domain = Domain.global()
-		store = Jenkins.instance.getExtensionList('com.cloudbees.plugins.credentials.SystemCredentialsProvider')[0].getStore()	
+		def store = Jenkins.instance.getExtensionList('com.cloudbees.plugins.credentials.SystemCredentialsProvider')[0].getStore()	
 		def secret_Token = Secret.fromString(token)
 		secretText = new StringCredentialsImpl(
 			CredentialsScope.GLOBAL,

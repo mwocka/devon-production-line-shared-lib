@@ -52,6 +52,8 @@ import org.jenkinsci.plugins.configfiles.GlobalConfigFiles
 import groovy.xml.StreamingMarkupBuilder 
 import groovy.xml.MarkupBuilder
 import groovy.xml.XmlUtil
+import java.nio.charset.StandardCharsets
+import java.nio.charset.Charset
 
 /**
  * Contains the configuration methods of the jenkins component

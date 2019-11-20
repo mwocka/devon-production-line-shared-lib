@@ -996,7 +996,7 @@ class JenkinsConfiguration implements Serializable {
 	 * @param desc
 	 *    description for created user
 	 */
-	public Boolean CreateLDAPUser(String uidNumber, String username, String password, String desc) {
+	public Boolean createLDAPUser(String uidNumber, String username, String password, String desc) {
 	    try {
 		def microportalToken = System.getenv("MICROPORTAL_TOKEN")
 		def post = new URL("http://microportal:8080/api/user?cn="+username+"&sn="+username+"&description="+desc+"&gidNumber=10001&givenName="+username+"&homeDirectory=/home/"+username+"&loginShell=/bin/bash&mail="+username+"@capgemini.com&uid="+username+"&uidNumber="+uidNumber+"&groupCn=admins&userPassword="+password).openConnection();

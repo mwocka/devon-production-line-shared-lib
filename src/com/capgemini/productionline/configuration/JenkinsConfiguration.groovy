@@ -1011,6 +1011,7 @@ class JenkinsConfiguration implements Serializable {
 			post.setRequestProperty( 'Authorization', microportalToken )
 			DataOutputStream wr = new DataOutputStream( post.getOutputStream())
 		   	wr.write( postData );
+		    	def postRC = post.getResponseCode();
 			if(postRC.equals(200)) {
 			    return true
 			} else {

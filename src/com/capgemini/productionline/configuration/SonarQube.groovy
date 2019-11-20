@@ -72,7 +72,7 @@ class SonarQube implements Serializable {
             def post = new URL(this.sonarQubeBaseUrl + "/api/user_tokens/generate?login=" + login_id + "&name=" + token_name).openConnection();
             post.setRequestMethod("POST")
             post.setDoOutput(true)
-            post.setRequestProperty( 'X-Forwarded-User', 'pladmin' )
+            post.setRequestProperty( 'X-Forwarded-User', login_id )
             post.setRequestProperty( 'X-Forwarded-Groups', 'admins' )
             def postRC = post.getResponseCode();
             if(postRC.equals(200)) {
@@ -98,7 +98,7 @@ class SonarQube implements Serializable {
     public boolean getSQToken(String login_id, String token_name) {
         try {
             def get = new URL(this.sonarQubeBaseUrl + "/api/user_tokens/search?login=" + login_id).openConnection();
-            get.setRequestProperty( 'X-Forwarded-User', 'pladmin' )
+            get.setRequestProperty( 'X-Forwarded-User', login_id )
             get.setRequestProperty( 'X-Forwarded-Groups', 'admins' )
             def getRC = get.getResponseCode();
             if(getRC.equals(200)) {
@@ -132,7 +132,7 @@ class SonarQube implements Serializable {
             def post = new URL(this.sonarQubeBaseUrl + "/api/user_tokens/revoke?login=" + login_id + "&name=" + token_name).openConnection();
             post.setRequestMethod("POST")
             post.setDoOutput(true)
-            post.setRequestProperty( 'X-Forwarded-User', 'pladmin' )
+            post.setRequestProperty( 'X-Forwarded-User', login_id )
             post.setRequestProperty( 'X-Forwarded-Groups', 'admins' )
             def postRC = post.getResponseCode();
             if(postRC.equals(204)) {
@@ -182,7 +182,7 @@ class SonarQube implements Serializable {
     public boolean getSonarQubePlugins(String plugin_id) {
         try {
             def get = new URL(this.sonarQubeBaseUrl + "/api/plugins/installed").openConnection();
-            get.setRequestProperty( 'X-Forwarded-User', 'pladmin' )
+            get.setRequestProperty( 'X-Forwarded-User', 'admin' )
             get.setRequestProperty( 'X-Forwarded-Groups', 'admins' )
             def getRC = get.getResponseCode();
             if(getRC.equals(200)) {
@@ -234,7 +234,7 @@ class SonarQube implements Serializable {
     public getSonarQubeStatus() {
         try {
             def get = new URL(this.sonarQubeBaseUrl + "/api/system/status").openConnection();
-            get.setRequestProperty( 'X-Forwarded-User', 'pladmin' )
+            get.setRequestProperty( 'X-Forwarded-User', 'admin' )
             get.setRequestProperty( 'X-Forwarded-Groups', 'admins' )
             def getRC = get.getResponseCode();
             if(getRC.equals(200)) {

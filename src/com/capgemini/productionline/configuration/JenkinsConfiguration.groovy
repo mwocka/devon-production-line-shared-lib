@@ -998,20 +998,26 @@ class JenkinsConfiguration implements Serializable {
 	 */
 	public Boolean createLDAPUser(String uidNumber, String username, String password, String desc) {
 	    try {
-		def microportalToken = System.getenv("MICROPORTAL_TOKEN")
-		def post = new URL("http://microportal:8080/api/user?cn="+username+"&sn="+username+"&description="+desc+"&gidNumber=10001&givenName="+username+"&homeDirectory=/home/"+username+"&loginShell=/bin/bash&mail="+username+"@capgemini.com&uid="+username+"&uidNumber="+uidNumber+"&groupCn=admins&userPassword="+password).openConnection();
-		post.setRequestMethod("POST")
-		post.setDoOutput(true)
-		post.setRequestProperty( 'Authorization', microportalToken )
-		def postRC = post.getResponseCode();
-		if(postRC.equals(200)) {
-		    return true
-		} else {
-		    return false
-		}
+			String urlParameters = "cn="+username+"&sn="+username+"&description="+desc+"&gidNumber=10001&givenName="+username+"&homeDirectory=/home/"+username+"&loginShell=/bin/bash&mail="+username+"@capgemini.com&uid="+username+"&uidNumber="+uidNumber+"&groupCn=admins&userPassword="+password
+			byte[] postData = urlParameters.getBytes( StandardCharsets.UTF_8 );
+			int postDataLength = postData.length;
+			def microportalToken = System.getenv("MICROPORTAL_TOKEN")
+			URL url = new URL( "http://microportal:8080/api/user" );
+			HttpURLConnection post= (HttpURLConnection) url.openConnection();           
+			post.setRequestMethod("POST")
+			post.setDoOutput(true)
+			post.setRequestProperty( 'Authorization', microportalToken )
+			DataOutputStream wr = new DataOutputStream( post.getOutputStream())
+		   	wr.write( postData );
+			if(postRC.equals(200)) {
+			    return true
+			} else {
+			    return false
+			}
 	    } catch (Exception ex) {
-		println("Unable to add user " + ex)
-		return false
+			println("Unable to add user " + ex)
+			return false
 	    }
 	}
+
 }

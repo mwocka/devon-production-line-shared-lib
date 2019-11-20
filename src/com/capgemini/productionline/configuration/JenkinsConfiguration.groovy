@@ -984,4 +984,34 @@ class JenkinsConfiguration implements Serializable {
 			return false
 		}	
 	}
+	/**
+	 * Method for creating new username in directoryservice.
+	 * <p>
+	 * @param uidNumber
+	 *    user uidNumber
+	 * @param username
+	 *    username of the new user
+	 * @param password
+	 *    password of the new user
+	 * @param desc
+	 *    description for created user
+	 */
+	public Boolean CreateLDAPUser(String uidNumber, String username, String password, String desc) {
+	    try {
+		def microportalToken = System.getenv("MICROPORTAL_TOKEN")
+		def post = new URL("http://microportal:8080/api/user?cn="+username+"&sn="+username+"&description="+desc+"&gidNumber=10001&givenName="+username+"&homeDirectory=/home/"+username+"&loginShell=/bin/bash&mail="+username+"@capgemini.com&uid="+username+"&uidNumber="+uidNumber+"&groupCn=admins&userPassword="+password).openConnection();
+		post.setRequestMethod("POST")
+		post.setDoOutput(true)
+		post.setRequestProperty( 'Authorization', microportalToken )
+		def postRC = post.getResponseCode();
+		if(postRC.equals(200)) {
+		    return true
+		} else {
+		    return false
+		}
+	    } catch (Exception ex) {
+		println("Unable to add user " + ex)
+		return false
+	    }
+	}
 }

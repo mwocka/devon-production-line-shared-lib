@@ -842,7 +842,7 @@ class JenkinsConfiguration implements Serializable {
                   <profiles/>
                 </settings>
                 '''
-	        def response = new XmlParser().parseText(cfg.content)
+	        def response = new XmlParser().parseText(cfg)
 	        
 	        response.servers.replaceNode { 
 			    delegate.servers() {

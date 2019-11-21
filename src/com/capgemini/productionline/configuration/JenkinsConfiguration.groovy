@@ -815,8 +815,6 @@ class JenkinsConfiguration implements Serializable {
 	/**
 	 * Create new Maven Configuration in Config File Management 
 	 * <p>
-	 * @param defaultConfigID
-	 *    ID of maven configuration - it will be used only to catch the template
 	 * @param serverID
 	 *    Server ID used inside pom.xml inside distributionManagement
 	 * @param newConfigID
@@ -829,10 +827,8 @@ class JenkinsConfiguration implements Serializable {
 	 *    ServerCredentialMapping credentials
 	 */
 	@NonCPS
-	public createMavenConfigContetnt(String defaultConfigID, String serverID, String newConfigID, String newConfigName, String newConfigComment, ServerCredentialMapping serverCreds) {
-	        //def configStore = Jenkins.get().getExtensionList('org.jenkinsci.plugins.configfiles.GlobalConfigFiles')[0]
-	        
-	        //def cfg = configStore.getById(defaultConfigID)
+	public createMavenConfigContetnt(String serverID, String newConfigID, String newConfigName, String newConfigComment, ServerCredentialMapping serverCreds) {
+
             def cfg = '''<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
                   <pluginGroups/>
                   <proxies/>

@@ -830,9 +830,18 @@ class JenkinsConfiguration implements Serializable {
 	 */
 	@NonCPS
 	public createMavenConfigContetnt(String defaultConfigID, String serverID, String newConfigID, String newConfigName, String newConfigComment, ServerCredentialMapping serverCreds) {
-	        def configStore = Jenkins.get().getExtensionList('org.jenkinsci.plugins.configfiles.GlobalConfigFiles')[0]
+	        //def configStore = Jenkins.get().getExtensionList('org.jenkinsci.plugins.configfiles.GlobalConfigFiles')[0]
 	        
-	        def cfg = configStore.getById(defaultConfigID)
+	        //def cfg = configStore.getById(defaultConfigID)
+            def cfg = '''
+                <?xml version="1.0" encoding="UTF-8"?><settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+                  <pluginGroups/>
+                  <proxies/>
+                  <servers/>
+                  <mirrors/>
+                  <profiles/>
+                </settings>
+                '''
 	        def response = new XmlParser().parseText(cfg.content)
 	        
 	        response.servers.replaceNode { 
